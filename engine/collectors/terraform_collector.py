@@ -28,7 +28,12 @@ class TerraformCollector:
         if state_file_path:
             self.state_file_path = Path(state_file_path)
         else:
-            self.state_file_path = Path(__file__).resolve().parent.parent.parent / "db" / "seed_data" / "terraform_state.json"
+            # Check for live terraform.tfstate first, then fallback to seed data
+            live_state = Path(__file__).resolve().parent.parent.parent / "terraform" / "terraform.tfstate"
+            if live_state.exists():
+                self.state_file_path = live_state
+            else:
+                self.state_file_path = Path(__file__).resolve().parent.parent.parent / "db" / "seed_data" / "terraform_state.json"
 
     def get_all_managed_resources(self) -> Dict[str, TerraformResourceInfo]:
         """Returns mapping of cloud resource_id -> TerraformResourceInfo."""

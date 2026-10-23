@@ -13,12 +13,17 @@ from engine.models import Event, EventSource
 logger = logging.getLogger(__name__)
 
 
+import os
+
 class CloudTrailCollector:
     """Collects historical events for resources from CloudTrail logs or seed data."""
 
-    def __init__(self, region_name: str = "us-east-1", use_seed: bool = True):
-        self.region_name = region_name
-        self.use_seed = use_seed
+    def __init__(self, region_name: Optional[str] = None, use_seed: Optional[bool] = None):
+        self.region_name = region_name or os.getenv("AWS_REGION", "ap-south-1")
+        if use_seed is not None:
+            self.use_seed = use_seed
+        else:
+            self.use_seed = (os.getenv("APP_ENV", "development").lower() != "production")
         self.seed_dir = Path(__file__).resolve().parent.parent.parent / "db" / "seed_data"
 
     def collect_all_events(self) -> List[Event]:
