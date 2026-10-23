@@ -1,0 +1,80 @@
+[
+  {
+    "id": "i-0a1b2c3d4e5f67890",
+    "name": "payment-api-prod",
+    "resource_type": "ec2_instance",
+    "region": "us-east-1",
+    "created_at": "2024-03-14T10:30:00Z",
+    "tags": {
+      "Name": "payment-api-prod",
+      "Environment": "production",
+      "Team": "Payments Platform",
+      "Owner": "payments-team@company.com",
+      "ManagedBy": "Terraform"
+    },
+    "state": "running",
+    "cost_per_month": 187.00,
+    "details": {
+      "instance_type": "m5.large",
+      "private_ip": "10.0.1.45",
+      "cpu_utilization_avg_pct": 8.4,
+      "network_req_per_sec": 0.4,
+      "traffic_last_seen_days": 0
+    },
+    "attached_to": [],
+    "dependencies": [
+      "vol-01a2b3c4d5e6f7a8b",
+      "sg-01a2b3c4d5e6f789a",
+      "role-payment-api",
+      "alb-payment-prod"
+    ]
+  },
+  {
+    "id": "i-0b2c3d4e5f6a7b8c9",
+    "name": "old-analytics-server",
+    "resource_type": "ec2_instance",
+    "region": "us-east-1",
+    "created_at": "2022-09-10T08:15:00Z",
+    "tags": {
+      "Name": "old-analytics-server",
+      "Project": "Analytics-Old"
+    },
+    "state": "running",
+    "cost_per_month": 245.00,
+    "details": {
+      "instance_type": "c5.2xlarge",
+      "private_ip": "10.0.4.12",
+      "cpu_utilization_avg_pct": 0.1,
+      "network_req_per_sec": 0.0,
+      "traffic_last_seen_days": 60
+    },
+    "attached_to": [],
+    "dependencies": [
+      "vol-02b3c4d5e6f7a8b9c",
+      "sg-02b3c4d5e6f789b1c"
+    ]
+  },
+  {
+    "id": "i-0c3d4e5f6a7b8c9d0",
+    "name": "dev-test-instance",
+    "resource_type": "ec2_instance",
+    "region": "us-east-1",
+    "created_at": "2024-08-20T14:00:00Z",
+    "tags": {
+      "Name": "dev-test-instance"
+    },
+    "state": "stopped",
+    "cost_per_month": 45.00,
+    "details": {
+      "instance_type": "t3.medium",
+      "private_ip": "10.0.9.88",
+      "cpu_utilization_avg_pct": 0.0,
+      "network_req_per_sec": 0.0,
+      "traffic_last_seen_days": 45
+    },
+    "attached_to": [],
+    "dependencies": [
+      "sg-04d5e6f789d3e4f5a"
+    ]
+  }
+]

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    @page {
+        size: A4;
+        margin: 1.8cm 1.8cm 1.8cm 1.8cm;
+    }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #1e293b;
+        line-height: 1.6;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+    }
+    .page-break {
+        page-break-before: always;
+    }
+    .header-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+        color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+    .tagline {
+        color: #38bdf8;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+    .main-title {
+        font-size: 28px;
+        font-weight: 800;
+        margin: 0 0 10px 0;
+        color: #ffffff;
+    }
+    .subtitle {
+        font-size: 16px;
+        color: #cbd5e1;
+        margin: 0;
+    }
+    h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 8px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e40af;
+        margin-top: 18px;
+        margin-bottom: 8px;
+    }
+    p {
+        margin: 0 0 12px 0;
+    }
+    .card {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    .card-highlight {
+        background-color: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 18px;
+    }
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 12px;
+    }
+    .badge-blue { background-color: #dbeafe; color: #1e40af; }
+    .badge-green { background-color: #dcfce7; color: #166534; }
+    .badge-yellow { background-color: #fef9c3; color: #854d0e; }
+    .badge-red { background-color: #fee2e2; color: #991b1b; }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        font-size: 13px;
+    }
+    th {
+        background-color: #0f172a;
+        color: #ffffff;
+        text-align: left;
+        padding: 10px 12px;
+        font-weight: 600;
+    }
+    td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    tr:nth-child(even) {
+        background-color: #f8fafc;
+    }
+    .step-box {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 16px;
+    }
+    .step-number {
+        background: #2563eb;
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 14px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 14px;
+        flex-shrink: 0;
+    }
+    .step-content {
+        flex: 1;
+    }
+    .step-title {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+    .step-desc {
+        font-size: 13px;
+        color: #475569;
+        margin: 0;
+    }
+    .example-box {
+        border-left: 4px solid #2563eb;
+        padding: 12px 16px;
+        background-color: #f1f5f9;
+        margin: 15px 0;
+        border-radius: 0 8px 8px 0;
+    }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<div class="header-banner">
+    <div class="tagline">Plain English Guide &amp; Concept Overview</div>
+    <div class="main-title">Cloud Resource Archaeologist</div>
+    <div class="subtitle">Understand why cloud servers exist, who owns them, and how to delete them safely with zero fear.</div>
+</div>
+
+<h2>1. The Real-World Problem (Why Companies Need This)</h2>
+<p>
+    Imagine you work at a company with <strong>5,000 servers, disks, and databases</strong> running on Amazon Web Services (AWS). Every month, the company pays a massive cloud bill.
+</p>
+<p>
+    One day, an engineer spots an old server called <code>old-analytics-server</code> costing <strong>$245 every month ($2,940/year)</strong>:
+</p>
+
+<div class="card">
+    <p>❌ <strong>"Who built this?"</strong> &rarr; Nobody knows. The creator left the company 2 years ago.</p>
+    <p>❌ <strong>"Is anyone using it?"</strong> &rarr; It hasn't received web traffic for 60 days, but nobody is 100% sure.</p>
+    <p>❌ <strong>"Can we just delete it?"</strong> &rarr; <em>"NO! Don't touch it! What if it breaks something in production?"</em></p>
+</div>
+
+<p>
+    Because <strong>deleting is permanent and scary</strong>, nobody touches anything. Companies waste millions of dollars every year paying for "zombie" cloud resources that nobody uses.
+</p>
+
+<h2>2. The Solution: The 3 Questions We Answer</h2>
+<p>
+    Like an archaeologist digging up history, our tool connects clues across AWS, Git code, Terraform, and audit logs to answer three simple questions:
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>The Question</th>
+            <th>How the Tool Investigates</th>
+            <th>Plain English Example</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>1. Why does it exist?</strong></td>
+            <td>Builds a timeline from creation logs and code commits.</td>
+            <td><em>"Created on March 14, 2024 via GitHub PR #142 by Alice. Resized in April. No web traffic for 60 days."</em></td>
+        </tr>
+        <tr>
+            <td><strong>2. Who owns it?</strong></td>
+            <td>Uses a 5-step fallback chain to find the current active team.</td>
+            <td><em>"Creator Dan left the company. Current responsible team is Cloud Platform Ops (High Confidence)."</em></td>
+        </tr>
+        <tr>
+            <td><strong>3. Can we delete it?</strong></td>
+            <td>Checks dependencies and active network traffic.</td>
+            <td><em>"Medium Risk: Idle for 60 days, but still has a connected disk. Requires owner approval before quarantine."</em></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="card-highlight">
+    <h3 style="margin-top:0;">🛡️ The Golden Rule: Never Guess</h3>
+    <p style="margin:0;">
+        If a server has missing logs or only 1 clue out of 6, the tool <strong>BLOCKS</strong> the verdict and honestly says: <em>"Insufficient evidence — I don't know."</em> We never guess with production infrastructure.
+    </p>
+</div>
+
+<!-- PAGE BREAK FOR PAGE 2 -->
+<div class="page-break"></div>
+
+<h2>3. The Core Secret: What is "Reversible Quarantine"?</h2>
+
+<p>
+    <strong>Quarantine is like the "Recycle Bin" on your computer.</strong> When you delete a file on your laptop, it doesn't vanish immediately — it moves to the Recycle Bin so you can restore it if you made a mistake.
+</p>
+<p>
+    In the cloud, deleting a server used to be like hitting <code>Shift + Delete</code> (gone forever). <strong>Reversible Quarantine creates a safe 6-step safety net.</strong>
+</p>
+
+<div class="example-box">
+    <strong>🎯 A Step-by-Step Real Example:</strong><br>
+    We want to decommission <code>old-analytics-server</code> (Cost: $245/month). Here is what happens:
+</div>
+
+<div class="step-box">
+    <div class="step-number">1</div>
+    <div class="step-content">
+        <div class="step-title">Step 1: Evidence Gathering</div>
+        <div class="step-desc">The tool shows the timeline, current owner, and proves the server had 0 requests for 60 days.</div>
+    </div>
+</div>
+
+<div class="step-box">
+    <div class="step-number">2</div>
+    <div class="step-content">
+        <div class="step-title">Step 2: Owner Approval</div>
+        <div class="step-desc">The team reviews the evidence and clicks "Approve Quarantine". Nothing is ever deleted automatically.</div>
+    </div>
+</div>
+
+<div class="step-box">
+    <div class="step-number">3</div>
+    <div class="step-content">
+        <div class="step-title">Step 3: Pre-Decommission Snapshot (Zero Data Loss)</div>
+        <div class="step-desc">Before touching anything, the system takes an exact clone backup (snapshot) of the entire server disk.</div>
+    </div>
+</div>
+
+<div class="step-box">
+    <div class="step-number">4</div>
+    <div class="step-content">
+        <div class="step-title">Step 4: Isolate / Quarantine (Turn Off)</div>
+        <div class="step-desc">The server is turned off and disconnected from the network. While stopped, it costs <strong>$0 for compute</strong>.</div>
+    </div>
+</div>
+
+<div class="step-box">
+    <div class="step-number">5</div>
+    <div class="step-content">
+        <div class="step-title">Step 5: 14-Day Watch Window (The Observation Test)</div>
+        <div class="step-desc">We wait 14 days. The system monitors error logs and CloudWatch alarms to see if anything complains.</div>
+    </div>
+</div>
+
+<div class="step-box">
+    <div class="step-number">6</div>
+    <div class="step-content">
+        <div class="step-title">Step 6: The Safe Decision (Roll Back OR Permanent Delete)</div>
+        <div class="step-desc">
+            • <strong>Scenario A (Something broke):</strong> An engineer says <em>"Hey, my script failed!"</em> &rarr; Click <strong>"Roll Back"</strong>. The server is back online in 3 minutes with zero data loss!<br>
+            • <strong>Scenario B (14 days of total silence):</strong> Nobody needed it. The server is safely and permanently deleted. The company saves $2,940/year.
+        </div>
+    </div>
+</div>
+
+<h3>🤔 "What if a script runs only 2 times a year (Semi-Annual Cron Jobs)?"</h3>
+<p>
+    This is a common question: what if a batch job runs once every 6 months for taxes or audits?
+</p>
+<div class="card">
+    <p><strong>1. Code Scan:</strong> The tool scans Terraform, Git, and AWS EventBridge schedules for cron expressions like <code>cron(0 0 1 6,12 ? *)</code> (June and December runs).</p>
+    <p><strong>2. Extended Watch Windows:</strong> The quarantine watch window can be extended to 30, 60, or 90 days across quarter-ends.</p>
+    <p><strong>3. Archived Snapshots ($0.50/month):</strong> Even after permanent deletion, backup snapshots are kept in cold storage for pennies ($0.50/mo vs $245/mo for a running server). If needed 6 months later, the server can be restored in 3 minutes.</p>
+</div>
+
+<!-- PAGE BREAK FOR PAGE 3 -->
+<div class="page-break"></div>
+
+<h2>4. Comparison: Old Way vs. Cloud Resource Archaeologist</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Feature / Experience</th>
+            <th>The Old Manual Way</th>
+            <th>With Cloud Resource Archaeologist</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Investigation Time</strong></td>
+            <td>3 to 5 days searching Slack, Jira &amp; Git</td>
+            <td><strong>10 seconds</strong> (automated timeline)</td>
+        </tr>
+        <tr>
+            <td><strong>Ownership Certainty</strong></td>
+            <td>Guesswork (original creator left)</td>
+            <td><strong>5-tier fallback</strong> with confidence rating</td>
+        </tr>
+        <tr>
+            <td><strong>Deletion Risk</strong></td>
+            <td>High risk of breaking production</td>
+            <td><strong>Zero risk</strong> (1-click rollback snapshot)</td>
+        </tr>
+        <tr>
+            <td><strong>Audit Trail</strong></td>
+            <td>No record of who deleted what</td>
+            <td><strong>Full compliance log</strong> stored in database</td>
+        </tr>
+        <tr>
+            <td><strong>Cost Savings</strong></td>
+            <td>$0 (too afraid to delete)</td>
+            <td><strong>20% to 40% monthly bill reduction</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>5. Simple One-Sentence Pitch</h2>
+
+<div class="card-highlight" style="text-align: center; font-size: 16px; padding: 22px;">
+    <strong>"It tells you the full history of any cloud resource, who owns it, and whether it's safe to remove &mdash; and then lets you remove it in a safe way you can undo anytime."</strong>
+</div>
+
+<h2>6. Summary of Key Terms</h2>
+
+<ul>
+    <li><strong>Provenance Timeline:</strong> The chronological life story of a cloud resource (who built it, when, what code made it, and what changed).</li>
+    <li><strong>Owner Fallback Chain:</strong> A smart rule that finds the real team responsible today (Tag &rarr; CODEOWNERS &rarr; Account Owner &rarr; Active Creator &rarr; Review).</li>
+    <li><strong>Risk Verdict:</strong> A safety rating (Low Risk, Medium Risk, High Risk, or Blocked) backed by real evidence.</li>
+    <li><strong>Reversible Quarantine:</strong> Backing up, turning off, and watching for 14 days before final deletion, with 1-click rollback.</li>
+</ul>
+
+<div style="margin-top: 30px; text-align: center; color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+    Cloud Resource Archaeologist &bull; Problem Statement, Plain English Guide &amp; MVP Architecture
+</div>
+
+</body>
+</html>

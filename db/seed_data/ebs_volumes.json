@@ -1,0 +1,67 @@
+[
+  {
+    "id": "vol-01a2b3c4d5e6f7a8b",
+    "name": "vol-payment-api-data",
+    "resource_type": "ebs_volume",
+    "region": "us-east-1",
+    "created_at": "2024-03-14T10:30:00Z",
+    "tags": {
+      "Name": "vol-payment-api-data",
+      "Environment": "production",
+      "ManagedBy": "Terraform"
+    },
+    "state": "in_use",
+    "cost_per_month": 10.00,
+    "details": {
+      "size_gb": 100,
+      "volume_type": "gp3",
+      "iops": 3000,
+      "throughput_mbps": 125,
+      "device": "/dev/xvda"
+    },
+    "attached_to": ["i-0a1b2c3d4e5f67890"],
+    "dependencies": []
+  },
+  {
+    "id": "vol-02b3c4d5e6f7a8b9c",
+    "name": "vol-analytics-root",
+    "resource_type": "ebs_volume",
+    "region": "us-east-1",
+    "created_at": "2022-09-10T08:15:00Z",
+    "tags": {
+      "Name": "vol-analytics-root"
+    },
+    "state": "in_use",
+    "cost_per_month": 95.00,
+    "details": {
+      "size_gb": 500,
+      "volume_type": "io2",
+      "iops": 5000,
+      "device": "/dev/sda1"
+    },
+    "attached_to": ["i-0b2c3d4e5f6a7b8c9"],
+    "dependencies": []
+  },
+  {
+    "id": "vol-04d5e6f7a8b9c0d1e",
+    "name": "vol-orphaned-001",
+    "resource_type": "ebs_volume",
+    "region": "us-east-1",
+    "created_at": "2024-01-15T12:00:00Z",
+    "tags": {
+      "Name": "vol-orphaned-001",
+      "Backup": "old-db-temp"
+    },
+    "state": "available",
+    "cost_per_month": 20.00,
+    "details": {
+      "size_gb": 200,
+      "volume_type": "gp2",
+      "iops": 600,
+      "unattached_duration_days": 120,
+      "last_io_days_ago": 120
+    },
+    "attached_to": [],
+    "dependencies": []
+  }
+]

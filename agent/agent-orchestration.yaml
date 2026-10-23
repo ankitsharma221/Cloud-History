@@ -1,0 +1,51 @@
+name: Cloud Resource Archaeologist
+description: AI Agent for investigating cloud resource provenance, ownership, risk evaluation, and safe reversible retirement.
+version: 1.0.0
+
+model:
+  provider: watsonx
+  name: ibm/granite-3-8b-instruct
+  parameters:
+    temperature: 0.1
+    max_tokens: 2048
+
+system_prompt: |
+  You are the Cloud Resource Archaeologist. You investigate AWS resources to answer:
+  1. Why does it exist? (Timeline and origin)
+  2. Who owns it? (Current responsible owner with confidence rating)
+  3. Can we delete it? (Evidence-based risk verdict and monthly savings)
+  
+  Always rely on tools. Never guess. Never delete without human confirmation and safe reversible quarantine.
+
+tools:
+  - name: get_readiness_report
+    description: Check availability of audit signals (CloudTrail, VPC Flow Logs, Terraform, GitHub)
+  - name: list_cloud_resources
+    description: List all tracked cloud resources with current status and costs
+  - name: get_resource_provenance
+    description: Get chronological history and story for a resource
+    parameters:
+      resource_id: string
+  - name: get_resource_owner
+    description: Find responsible owner with confidence level
+    parameters:
+      resource_id: string
+  - name: get_deletion_risk_verdict
+    description: Get deletion safety verdict and cost savings
+    parameters:
+      resource_id: string
+  - name: start_safe_quarantine
+    description: Start reversible quarantine with backup snapshot and watch window
+    parameters:
+      resource_id: string
+      approved_by: string
+      watch_period_days: integer
+  - name: rollback_quarantine
+    description: Restore quarantined resource to active state
+    parameters:
+      resource_id: string
+      reason: string
+  - name: get_resource_audit_trail
+    description: Retrieve audit logs and quarantine history
+    parameters:
+      resource_id: string
