@@ -36,12 +36,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for styling
+# Custom CSS for clean layout
 st.markdown("""
 <style>
+    .block-container { padding-top: 2rem; padding-bottom: 2rem; max-width: 95%; }
     .main-header { font-size: 2.2rem; font-weight: 700; color: #1E3A8A; margin-bottom: 0.2rem; }
-    .sub-header { font-size: 1.1rem; color: #4B5563; margin-bottom: 1.5rem; }
-    .metric-card { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; }
+    .sub-header { font-size: 1.05rem; color: #4B5563; margin-bottom: 1.2rem; }
     .badge-high { background-color: #FEE2E2; color: #991B1B; padding: 4px 10px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
     .badge-med { background-color: #FEF3C7; color: #92400E; padding: 4px 10px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
     .badge-low { background-color: #D1FAE5; color: #065F46; padding: 4px 10px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; }
@@ -121,14 +121,10 @@ for rid, lr in linked_all.items():
     })
 
 col1, col2, col3, col4 = st.columns(4)
-with col1:
-    st.metric("Total Resources", len(resources_data))
-with col2:
-    st.metric("Total Monthly Cloud Bill", f"${total_cost:,.2f} / mo")
-with col3:
-    st.metric("Identified Savings", f"${potential_savings:,.2f} / mo", delta=f"{potential_savings/total_cost*100:.1f}% potential reduction" if total_cost else "0%")
-with col4:
-    st.metric("Audit Coverage Score", f"{readiness.coverage_score:.0%}")
+col1.metric("Total Resources", len(resources_data))
+col2.metric("Total Monthly Cloud Bill", f"${total_cost:,.2f} / mo")
+col3.metric("Identified Savings", f"${potential_savings:,.2f} / mo")
+col4.metric("Audit Coverage Score", f"{readiness.coverage_score:.0%}")
 
 st.divider()
 
