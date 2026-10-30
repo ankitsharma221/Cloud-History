@@ -8,6 +8,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
+from engine.collectors.aws_collector import AWSCollector
+from engine.collectors.cloudtrail_collector import CloudTrailCollector
 from engine.linker import Linker
 from engine.timeline_builder import TimelineBuilder
 from engine.owner_resolver import OwnerResolver
@@ -17,9 +19,15 @@ from db.database import SessionLocal, init_db, load_seed_data
 from db.models_db import DBResource, DBOwner, DBQuarantine, DBEvent
 from engine.models import RiskLevel, ConfidenceLevel
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv(".env")
+
 # Initialize database
 init_db()
-load_seed_data()
+if os.getenv("APP_ENV", "development").lower() != "production":
+    load_seed_data()
 
 st.set_page_config(
     page_title="Cloud Resource Archaeologist",
@@ -47,7 +55,15 @@ linker = Linker()
 timeline_builder = TimelineBuilder()
 owner_resolver = OwnerResolver()
 risk_engine = RiskEngine()
-readiness_checker = ReadinessChecker()
+is_production = os.getenv("APP_ENV", "development").lower() == "production"
+aws_collector = AWSCollector(region_name=os.getenv("AWS_REGION", "ap-south-1"), use_seed=not is_production)
+cloudtrail_collector = CloudTrailCollector(region_name=os.getenv("AWS_REGION", "ap-south-1"), use_seed=not is_production)
+
+linker = Linker(aws_collector=aws_collector, cloudtrail_collector=cloudtrail_collector)
+timeline_builder = TimelineBuilder()
+owner_resolver = OwnerResolver()
+risk_engine = RiskEngine()
+readiness_checker = ReadinessChecker(aws_collector=aws_collector, cloudtrail_collector=cloudtrail_collector)
 
 # ── Sidebar ──────────────────────────────────────────────────────────────────
 
@@ -78,6 +94,8 @@ resources_data = []
 
 total_cost = 0.0
 potential_savings = 0.0
+
+st.sidebar.markdown(f"**Environment:** `{'AWS Live (ap-south-1)' if is_production else 'Seed / Dev Mode'}`")
 
 for rid, lr in linked_all.items():
     res = lr.resource

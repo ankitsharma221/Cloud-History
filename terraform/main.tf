@@ -109,7 +109,7 @@ resource "aws_ebs_volume" "orphaned_volume" {
 
 # ── Resource 4: Legacy Open Security Group ──
 resource "aws_security_group" "legacy_open_sg" {
-  name        = "sg-legacy-open-test"
+  name        = "legacy-open-test-sg"
   description = "Legacy open security group for testing drift"
   vpc_id      = data.aws_vpc.default.id
 
