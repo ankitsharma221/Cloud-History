@@ -15,6 +15,31 @@ logger = logging.getLogger(__name__)
 
 import os
 
+# Estimated on-demand hourly pricing benchmarks for common EC2 instance types
+EC2_HOURLY_ESTIMATES = {
+    "t2.nano": 0.0058,
+    "t2.micro": 0.0116,
+    "t2.small": 0.0230,
+    "t2.medium": 0.0464,
+    "t3.nano": 0.0052,
+    "t3.micro": 0.0104,
+    "t3.small": 0.0208,
+    "t3.medium": 0.0416,
+    "t3.large": 0.0832,
+    "m5.large": 0.0960,
+    "m5.xlarge": 0.1920,
+    "c5.large": 0.0850,
+    "c5.xlarge": 0.1700,
+    "c5.2xlarge": 0.3400,
+}
+
+
+def estimate_ec2_monthly_cost(instance_type: Optional[str]) -> float:
+    """Calculate approximate monthly cost based on 730 monthly hours."""
+    hourly = EC2_HOURLY_ESTIMATES.get(instance_type or "", 0.05)
+    return round(hourly * 730.0, 2)
+
+
 class AWSCollector:
     """Discovers AWS resources via live boto3 API or seed data fallback."""
 
@@ -46,6 +71,34 @@ class AWSCollector:
                     for inst in res.get("Instances", []):
                         tags = {t["Key"]: t["Value"] for t in inst.get("Tags", [])}
                         name = tags.get("Name", inst["InstanceId"])
+                        cpu_avg = 0.5
+                        try:
+                            cw = boto3.client("cloudwatch", region_name=self.region_name)
+                            metric_res = cw.get_metric_data(
+                                MetricDataQueries=[
+                                    {
+                                        "Id": "cpu",
+                                        "MetricStat": {
+                                            "Metric": {
+                                                "Namespace": "AWS/EC2",
+                                                "MetricName": "CPUUtilization",
+                                                "Dimensions": [{"Name": "InstanceId", "Value": inst["InstanceId"]}],
+                                            },
+                                            "Period": 300,
+                                            "Stat": "Average",
+                                        },
+                                        "ReturnData": True,
+                                    }
+                                ],
+                                StartTime=datetime.now(timezone.utc) - timedelta(hours=1),
+                                EndTime=datetime.now(timezone.utc),
+                            )
+                            values = metric_res.get("MetricDataResults", [{}])[0].get("Values", [])
+                            if values:
+                                cpu_avg = round(float(sum(values) / len(values)), 2)
+                        except Exception:
+                            pass
+
                         results.append(
                             Resource(
                                 id=inst["InstanceId"],
@@ -55,10 +108,11 @@ class AWSCollector:
                                 created_at=inst.get("LaunchTime"),
                                 tags=tags,
                                 state=ResourceState(inst["State"]["Name"].lower()) if inst.get("State") else ResourceState.RUNNING,
-                                cost_per_month=150.0,
+                                cost_per_month=estimate_ec2_monthly_cost(inst.get("InstanceType")),
                                 details={
                                     "instance_type": inst.get("InstanceType"),
                                     "private_ip": inst.get("PrivateIpAddress"),
+                                    "cpu_utilization_avg_pct": cpu_avg,
                                 },
                                 dependencies=[sg["GroupId"] for sg in inst.get("SecurityGroups", [])]
                             )

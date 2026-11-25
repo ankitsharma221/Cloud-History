@@ -4,7 +4,7 @@ Defines the structure for cloud resources, provenance events, ownership resoluti
 risk verdicts, timeline history, and quarantine workflows.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
@@ -149,7 +149,7 @@ class QuarantineRecord(BaseModel):
     id: str = Field(..., description="Unique quarantine workflow ID")
     resource_id: str = Field(..., description="Resource being quarantined")
     status: QuarantineStatus = Field(QuarantineStatus.NONE, description="Current workflow status")
-    initiated_at: datetime = Field(default_factory=datetime.utcnow, description="When quarantine was initiated")
+    initiated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="When quarantine was initiated")
     approved_by: str = Field(..., description="Owner or admin who authorized quarantine")
     snapshot_id: Optional[str] = Field(None, description="Backup snapshot ID created prior to quarantine")
     previous_state: Dict[str, Any] = Field(default_factory=dict, description="State properties before quarantine for rollback")

@@ -1,7 +1,7 @@
 """SQLAlchemy database models for Cloud Resource Archaeologist."""
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from sqlalchemy import (
     Boolean,
@@ -33,7 +33,7 @@ class DBResource(Base):
     details_json = Column(Text, default="{}")
     attached_to_json = Column(Text, default="[]")
     dependencies_json = Column(Text, default="[]")
-    created_in_db = Column(DateTime, default=datetime.utcnow)
+    created_in_db = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     events = relationship("DBEvent", back_populates="resource", cascade="all, delete-orphan")
@@ -112,7 +112,7 @@ class DBOwner(Base):
     explanation = Column(Text, nullable=False)
     confirmed_by_user = Column(Boolean, default=False)
     user_correction = Column(String(256), nullable=True)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     resource = relationship("DBResource", back_populates="owner")
 
@@ -131,7 +131,7 @@ class DBRiskVerdict(Base):
     verdict_blocked = Column(Boolean, default=False)
     block_reason = Column(Text, nullable=True)
     required_actions_json = Column(Text, default="[]")
-    assessed_at = Column(DateTime, default=datetime.utcnow)
+    assessed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     resource = relationship("DBResource", back_populates="verdicts")
 
@@ -175,7 +175,7 @@ class DBQuarantine(Base):
     id = Column(String(128), primary_key=True, index=True)
     resource_id = Column(String(128), ForeignKey("resources.id", ondelete="CASCADE"), index=True, nullable=False)
     status = Column(String(64), default="none")
-    initiated_at = Column(DateTime, default=datetime.utcnow)
+    initiated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     approved_by = Column(String(256), nullable=False)
     snapshot_id = Column(String(128), nullable=True)
     previous_state_json = Column(Text, default="{}")

@@ -4,6 +4,15 @@ Interactive UI for exploring cloud resource provenance, ownership, risk verdicts
 and executing reversible decommissioning workflows.
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root directory to sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -55,20 +64,27 @@ linker = Linker()
 timeline_builder = TimelineBuilder()
 owner_resolver = OwnerResolver()
 risk_engine = RiskEngine()
-is_production = os.getenv("APP_ENV", "development").lower() == "production"
-aws_collector = AWSCollector(region_name=os.getenv("AWS_REGION", "ap-south-1"), use_seed=not is_production)
-cloudtrail_collector = CloudTrailCollector(region_name=os.getenv("AWS_REGION", "ap-south-1"), use_seed=not is_production)
+# ── Sidebar ──────────────────────────────────────────────────────────────────
+
+st.sidebar.title("🔍 Resource Archaeologist")
+st.sidebar.caption("Evidence-in. Safe decisions out.")
+
+# Environment Mode Switcher (Live AWS vs Seed Data)
+env_choice = st.sidebar.radio(
+    "🌐 Data Source Environment",
+    ["AWS Live (ap-south-1 Mumbai)", "Seed Sandbox Data"],
+    index=0
+)
+is_live_aws = ("AWS Live" in env_choice)
+
+aws_collector = AWSCollector(region_name=os.getenv("AWS_REGION", "ap-south-1"), use_seed=not is_live_aws)
+cloudtrail_collector = CloudTrailCollector(region_name=os.getenv("AWS_REGION", "ap-south-1"), use_seed=not is_live_aws)
 
 linker = Linker(aws_collector=aws_collector, cloudtrail_collector=cloudtrail_collector)
 timeline_builder = TimelineBuilder()
 owner_resolver = OwnerResolver()
 risk_engine = RiskEngine()
 readiness_checker = ReadinessChecker(aws_collector=aws_collector, cloudtrail_collector=cloudtrail_collector)
-
-# ── Sidebar ──────────────────────────────────────────────────────────────────
-
-st.sidebar.title("🔍 Resource Archaeologist")
-st.sidebar.caption("Evidence-in. Safe decisions out.")
 
 # Check readiness
 readiness = readiness_checker.check_readiness()
@@ -95,7 +111,7 @@ resources_data = []
 total_cost = 0.0
 potential_savings = 0.0
 
-st.sidebar.markdown(f"**Environment:** `{'AWS Live (ap-south-1)' if is_production else 'Seed / Dev Mode'}`")
+st.sidebar.markdown(f"**Active Environment:** `{'Live AWS Mumbai (ap-south-1)' if is_live_aws else 'Seed Sandbox Mode'}`")
 
 for rid, lr in linked_all.items():
     res = lr.resource
@@ -181,11 +197,12 @@ owner = owner_resolver.resolve_owner(lr)
 verdict = risk_engine.evaluate_risk(lr)
 
 # Tabs
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📜 1. Why Does It Exist? (Timeline)",
     "👤 2. Who Owns It? (Ownership)",
     "⚖️ 3. Can We Delete It? (Risk Verdict)",
-    "🛡️ 4. Safe Reversible Quarantine"
+    "🛡️ 4. Safe Reversible Quarantine",
+    "🗺️ 5. Architecture & ER Workflow"
 ])
 
 # ── Tab 1: Timeline ──────────────────────────────────────────────────────────
@@ -365,3 +382,282 @@ with tab4:
 
     finally:
         db.close()
+
+# ── Tab 5: Architecture & ER Workflow ───────────────────────────────────────
+with tab5:
+    st.markdown("#### 🗺️ Project Architecture, Pipeline Workflow & ER Diagrams")
+    st.caption("Comprehensive blueprint of data flow, rule engines, database schemas, and state transitions.")
+
+    view_mode = st.radio(
+        "Select Diagram to Inspect:",
+        [
+            "💡 1. How the Core Idea Works (Technical Flowchart)",
+            "🔄 2. End-to-End Pipeline & Engine Architecture",
+            "🗄️ 3. Database Entity-Relationship (ER) Diagram",
+            "👤 4. Owner Resolution Fallback Chain",
+            "🛡️ 5. Reversible Quarantine State Machine"
+        ],
+        horizontal=True
+    )
+
+    if "1. How the Core Idea" in view_mode:
+        st.markdown("##### 💡 Technical Flowchart: How the Archaeological Idea Works")
+        st.markdown("""
+```mermaid
+flowchart TD
+    classDef sourceStyle fill:#EBF5FB,stroke:#2980B9,stroke-width:2px,color:#1B4F72;
+    classDef checkStyle fill:#FEF9E7,stroke:#F39C12,stroke-width:2px,color:#7D6608;
+    classDef engineStyle fill:#E8F8F5,stroke:#16A085,stroke-width:2px,color:#0E6251;
+    classDef decisionStyle fill:#FDEDEC,stroke:#C0392B,stroke-width:2px,color:#78281F;
+    classDef safeStyle fill:#EAFAF1,stroke:#27AE60,stroke-width:2px,color:#145A32;
+
+    %% 1. Ingestion Phase
+    subgraph Phase1["📡 PHASE 1: Multi-Source Clue Gathering"]
+        direction TB
+        RawAWS["1. Query Cloud APIs<br/><code>boto3: ec2, ebs, sg</code><br/><i>Finds active & idle resources</i>"]:::sourceStyle
+        RawCT["2. Ingest Audit Logs<br/><code>CloudTrail Events</code><br/><i>Who created/modified what & when</i>"]:::sourceStyle
+        RawTF["3. Parse IaC State<br/><code>terraform.tfstate</code><br/><i>Maps code repository & module</i>"]:::sourceStyle
+        RawGH["4. Interrogate Git & SCM<br/><code>GitHub PRs & CODEOWNERS</code><br/><i>Commit authors, PR merges, teams</i>"]:::sourceStyle
+        RawCW["5. Network & Metric Signals<br/><code>CloudWatch & Flow Logs</code><br/><i>Network bytes, IOPS, last activity</i>"]:::sourceStyle
+    end
+
+    %% 2. Readiness Check
+    subgraph Phase2["🛡️ PHASE 2: Signal Readiness & Sanity Check"]
+        ReadinessGate{"Are required audit<br/>signals available?<br/><code>ReadinessChecker</code>"}:::checkStyle
+        BlockWarning["Block or Degrade Verdict<br/><i>Rule: Never guess without evidence</i>"]:::decisionStyle
+    end
+
+    %% 3. Identity Linking
+    subgraph Phase3["🔗 PHASE 3: Deterministic Identity Linking"]
+        Linker["Resource Linker Engine<br/><code>linker.py</code><br/><i>Fuses all disjointed clues using <b>Resource ID</b> as Primary Key</i>"]:::engineStyle
+        LinkedFactGraph[("Unified Archaeological Fact Graph<br/><code>LinkedResource</code>")]:::engineStyle
+    end
+
+    %% 4. The 3 Core Question Engines
+    subgraph Phase4["🧠 PHASE 4: The 3 Core Reasoning Engines"]
+        direction TB
+
+        subgraph Q1["Question 1: Why does it exist?"]
+            TBEngine["<b>Timeline Builder</b><br/><code>timeline_builder.py</code><br/>• Sort events chronologically<br/>• Detect out-of-band manual drift<br/>• Output: Complete Lifecycle Story"]:::engineStyle
+        end
+
+        subgraph Q2["Question 2: Who owns it?"]
+            OREngine["<b>Owner Resolver</b><br/><code>owner_resolver.py</code><br/>• Fallback: Tags ➔ CODEOWNERS ➔ Account ➔ Creator<br/>• Assigns Confidence (HIGH/MED/LOW)<br/>• Output: Attributed Owner & Proof"]:::engineStyle
+        end
+
+        subgraph Q3["Question 3: Is it safe to delete?"]
+            REEngine["<b>Risk & Dependency Engine</b><br/><code>risk_engine.py</code><br/>• Evaluate: Zero traffic + No IaC + No Inbound Bindings<br/>• Score: LOW / MED / HIGH / BLOCKED<br/>• Output: Concrete Evidence Pro/Con"]:::engineStyle
+        end
+    end
+
+    %% 5. Human Decision & Safety State Machine
+    subgraph Phase5["🛡️ PHASE 5: Safe Reversible Decommissioning"]
+        VerdictCheck{"Risk Level & Owner Approval?"}:::checkStyle
+        KeepActive["Keep Running<br/><i>(Resource is active/essential)</i>"]:::safeStyle
+        
+        subgraph QuarantineWorkflow["4-Stage Safety Isolation"]
+            Snapshot["Step 1: Automated Snapshot<br/><code>Create EBS/AMI Backup</code>"]:::safeStyle
+            IsolateSG["Step 2: Network Isolation<br/><code>Attach quarantine-sg (Deny Ingress)</code>"]:::safeStyle
+            StopCompute["Step 3: Stop Instance<br/><code>EC2 Stopped (Billing Halts)</code>"]:::safeStyle
+            CanaryWatch["Step 4: 14-Day Canary Observation<br/><code>Watch for alarm spikes / errors</code>"]:::safeStyle
+        end
+
+        RollbackTrigger{"Any dependency break<br/>or alert during 14 days?"}:::checkStyle
+        EmergencyRollback["🚨 1-Click Rollback<br/><code>Instant state & network restore</code>"]:::decisionStyle
+        FinalRetire["✅ Permanent Decommission<br/><code>Terminate resource (Retain snapshot)</code>"]:::safeStyle
+    end
+
+    %% Connections
+    RawAWS & RawCT & RawTF & RawGH & RawCW --> ReadinessGate
+    ReadinessGate -- "< 2 Signals" --> BlockWarning
+    ReadinessGate -- "Coverage OK" --> Linker
+    BlockWarning --> Linker
+    Linker --> LinkedFactGraph
+    LinkedFactGraph --> TBEngine & OREngine & REEngine
+
+    TBEngine & OREngine & REEngine --> VerdictCheck
+    VerdictCheck -- "HIGH RISK / In Use" --> KeepActive
+    VerdictCheck -- "LOW / MED RISK + Approved" --> Snapshot
+    Snapshot --> IsolateSG --> StopCompute --> CanaryWatch
+    CanaryWatch --> RollbackTrigger
+    RollbackTrigger -- "Yes (Problem detected)" --> EmergencyRollback
+    RollbackTrigger -- "No (14 days silent)" --> FinalRetire
+    EmergencyRollback --> KeepActive
+```
+        """)
+
+    elif "2. End-to-End" in view_mode:
+        st.markdown("##### 🔄 End-to-End Archaeological Pipeline")
+        st.markdown("""
+```mermaid
+flowchart TD
+    subgraph DataSources["📡 1. Multi-Source Ingestion Layer"]
+        AWS["AWS Boto3 (EC2, EBS, SG)"]
+        CT["CloudTrail (Audit Logs)"]
+        TF["Terraform State (.tfstate)"]
+        GH["GitHub (PRs, Commits, CODEOWNERS)"]
+        CW["CloudWatch / VPC Flow Logs"]
+    end
+
+    subgraph CoreEngine["⚙️ 2. Core Archaeological Engine"]
+        RC["Readiness Checker<br/><i>(Audits Signal Availability)</i>"]
+        LK["Resource Linker<br/><i>(Joins by Resource ID)</i>"]
+        TB["Timeline Builder<br/><i>(Chronological Story)</i>"]
+        OR["Owner Resolver<br/><i>(5-Step Fallback Chain)</i>"]
+        RE["Risk Engine<br/><i>(Rule-Based Safety Evaluation)</i>"]
+    end
+
+    subgraph StorageLayer["🗄️ 3. SQLite / PostgreSQL DB"]
+        DB[(SQLAlchemy Models)]
+    end
+
+    subgraph DeliveryLayer["🚀 4. Interfaces & Automation"]
+        API["FastAPI REST API"]
+        MCP["MCP Server Tools"]
+        UI["Streamlit Dashboard"]
+        AGENT["watsonx / ICA AI Agent"]
+        QUAR["Reversible Quarantine Engine"]
+    end
+
+    AWS & CT & TF & GH & CW --> RC
+    RC --> LK
+    LK --> TB & OR & RE
+    TB & OR & RE --> DB
+    DB --> API
+    API --> MCP & UI
+    MCP --> AGENT
+    UI & AGENT --> QUAR
+```
+        """)
+
+    elif "2. Database" in view_mode:
+        st.markdown("##### 🗄️ Database Entity-Relationship (ER) Schema")
+        st.markdown("""
+```mermaid
+erDiagram
+    RESOURCES ||--o{ EVENTS : "has audit trail (1:N)"
+    RESOURCES ||--o| OWNERS : "attributed to (1:1)"
+    RESOURCES ||--o{ RISK_VERDICTS : "evaluated by (1:N)"
+    RESOURCES ||--o{ QUARANTINES : "undergoes (1:N)"
+
+    RESOURCES {
+        string id PK "Resource ID (e.g. i-0a8b9c...)"
+        string name "Resource tag name"
+        string resource_type "ec2_instance | ebs_volume | security_group"
+        string region "AWS Region"
+        datetime created_at "Launch / Creation timestamp"
+        text tags_json "JSON Key-Value tags"
+        string state "running | stopped | available"
+        float cost_per_month "Estimated monthly cost ($)"
+        text details_json "Hardware, IPs, Security details"
+        text attached_to_json "Parent/Child bindings"
+        text dependencies_json "Inbound/Outbound dependencies"
+        datetime created_in_db "Ingestion timestamp"
+    }
+
+    EVENTS {
+        string id PK "Event / Transaction UUID"
+        string resource_id FK "References resources.id"
+        datetime timestamp "Event occurrence time"
+        string event_type "RunInstances | ModifySecurityGroup | etc."
+        string actor "IAM User / Role / GitHub Bot"
+        string source "CLOUDTRAIL | GITHUB | TERRAFORM | MANUAL"
+        text description "Human readable event story"
+        text metadata_json "Raw audit payload"
+    }
+
+    OWNERS {
+        int id PK "Auto-increment ID"
+        string resource_id FK "References resources.id (UNIQUE)"
+        string name "Attributed Owner / Team"
+        string team "Department or SRE Pod"
+        string email "Owner Email address"
+        string confidence "HIGH | MEDIUM | LOW"
+        string source "owner_tag | codeowners | account_owner | creator | unowned"
+        text explanation "Deterministic audit reason"
+        boolean confirmed_by_user "Ground truth confirmed"
+        string user_correction "Manual override name"
+        datetime updated_at "Last verified timestamp"
+    }
+
+    RISK_VERDICTS {
+        int id PK "Auto-increment ID"
+        string resource_id FK "References resources.id"
+        string risk_level "LOW_RISK | MEDIUM_RISK | HIGH_RISK | BLOCKED"
+        float monthly_savings "Potential $ reclaimed"
+        text evidence_for_json "Array of facts supporting deletion"
+        text evidence_against_json "Array of blocker facts"
+        text missing_evidence_json "Signals unavailable"
+        boolean verdict_blocked "True if evidence < threshold"
+        text block_reason "Reason verdict was blocked"
+        text required_actions_json "Next actionable remediation steps"
+        datetime assessed_at "Assessment timestamp"
+    }
+
+    QUARANTINES {
+        string id PK "Quarantine Workflow UUID"
+        string resource_id FK "References resources.id"
+        string status "none | isolated | stopped | snapshot_created | retired | restored"
+        datetime initiated_at "Start timestamp"
+        string approved_by "Authorizing Engineer"
+        string snapshot_id "EBS / Instance backup ID"
+        text previous_state_json "Pre-isolation configuration"
+        int watch_period_days "Observation window (default: 14)"
+        datetime watch_until "Retirement deadline"
+        boolean problem_detected "Triggered alert flag"
+        text problem_details "Diagnostic error logs"
+        text logs_json "Chronological action audit trail"
+    }
+```
+        """)
+
+    elif "3. Owner" in view_mode:
+        st.markdown("##### 👤 5-Tier Fallback Chain for Ownership Resolution")
+        st.markdown("""
+```mermaid
+flowchart TD
+    Start([Resource Ingested]) --> Step1{1. Resource 'Owner' Tag?}
+    Step1 -- Yes --> HighTag[Assign Tagged Owner<br/><b>Confidence: HIGH</b>]
+    Step1 -- No --> Step2{2. Terraform & CODEOWNERS?}
+
+    Step2 -- Yes --> HighCode[Assign Repo Owner<br/><b>Confidence: HIGH</b>]
+    Step2 -- No --> Step3{3. Account / Team Tag?}
+
+    Step3 -- Yes --> MedAccount[Assign Account Owner<br/><b>Confidence: MEDIUM</b>]
+    Step3 -- No --> Step4{4. CloudTrail Creator Active?}
+
+    Step4 -- Yes --> MedCreator[Assign Creator<br/><b>Confidence: MEDIUM</b>]
+    Step4 -- No --> Step5[Send to Review Queue<br/><b>Confidence: LOW (Unowned)</b>]
+
+    HighTag & HighCode & MedAccount & MedCreator & Step5 --> GroundTruth[Human Admin Confirmation / Correction]
+```
+        """)
+
+    elif "4. Reversible" in view_mode:
+        st.markdown("##### 🛡️ 4-Stage Reversible Quarantine Decommissioning Workflow")
+        st.markdown("""
+```mermaid
+stateDiagram-v2
+    [*] --> Active : Resource in Normal Operation
+    Active --> QuarantineInitiated : Human Approves Deletion
+    
+    state QuarantineInitiated {
+        [*] --> BackupCreated : Create Automated Snapshot
+        BackupCreated --> Isolated : Strip Ingress / Isolate Network
+        Isolated --> Stopped : Stop Compute (Cost Drops)
+    }
+
+    QuarantineInitiated --> ObservationWatch : Start 14-60 Day Watch Period
+
+    state ObservationWatch {
+        Monitoring : Monitor Logs & Alarms
+        CheckDependencies : Verify No Connection Refused Errors
+    }
+
+    ObservationWatch --> PermanentRetirement : 14 Days Pass With 0 Incidents
+    PermanentRetirement --> [*] : Final Delete (Snapshot Retained)
+
+    ObservationWatch --> EmergencyRollback : Dependency Alert / Human Abort
+    EmergencyRollback --> Active : 1-Click Instant Restore From Snapshot
+```
+        """)

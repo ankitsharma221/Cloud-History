@@ -62,5 +62,32 @@ class CloudTrailCollector:
 
     def get_events_for_resource(self, resource_id: str) -> List[Event]:
         """Get all chronological events relating to a specific resource."""
+        if not self.use_seed:
+            try:
+                ct = boto3.client("cloudtrail", region_name=self.region_name)
+                response = ct.lookup_events(
+                    LookupAttributes=[{"AttributeKey": "ResourceName", "AttributeValue": resource_id}],
+                    MaxResults=50
+                )
+                events = []
+                for ev in response.get("Events", []):
+                    events.append(
+                        Event(
+                            id=ev["EventId"],
+                            resource_id=resource_id,
+                            timestamp=ev["EventTime"],
+                            event_type=ev.get("EventName", "API_CALL"),
+                            actor=ev.get("Username", "Unknown"),
+                            source=EventSource.CLOUDTRAIL,
+                            description=f"Action {ev.get('EventName')} executed by {ev.get('Username')}",
+                            metadata=ev
+                        )
+                    )
+                if events:
+                    return events
+            except (BotoCoreError, ClientError) as e:
+                logger.warning(f"CloudTrail targeted lookup failed for {resource_id} ({e}). Falling back.")
+
+        # Seed data fallback
         all_events = self.collect_all_events()
         return [e for e in all_events if e.resource_id == resource_id]

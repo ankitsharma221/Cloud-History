@@ -3,8 +3,9 @@
 import os
 import json
 from datetime import datetime
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator
+from typing import Generator, Iterator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -28,6 +29,20 @@ def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db
+    finally:
+        db.close()
+
+
+@contextmanager
+def get_db_context() -> Iterator[Session]:
+    """Context manager for standalone scripts and background tasks."""
+    db = SessionLocal()
+    try:
+        yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     finally:
         db.close()
 

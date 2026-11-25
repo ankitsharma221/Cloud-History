@@ -57,13 +57,18 @@ class ReadinessChecker:
             signals["GitHub Repository & PRs"] = False
 
         # 5. CloudWatch Metrics & Flow Logs
-        # In seed/demo mode, metrics are embedded in resource details
         has_metrics = False
         try:
-            for r in self.aws.collect_all_resources():
-                if "cpu_utilization_avg_pct" in r.details or "network_req_per_sec" in r.details:
-                    has_metrics = True
-                    break
+            if not self.aws.use_seed:
+                import boto3
+                cw = boto3.client("cloudwatch", region_name=self.aws.region_name)
+                res = cw.list_metrics(Namespace="AWS/EC2")
+                has_metrics = len(res.get("Metrics", [])) >= 0
+            else:
+                for r in self.aws.collect_all_resources():
+                    if "cpu_utilization_avg_pct" in r.details or "network_req_per_sec" in r.details:
+                        has_metrics = True
+                        break
             signals["CloudWatch & Flow Logs"] = has_metrics
         except Exception:
             signals["CloudWatch & Flow Logs"] = False

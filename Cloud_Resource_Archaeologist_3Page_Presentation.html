@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cloud Resource Archaeologist — Executive & Technical Presentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+  @page {
+    size: 1920px 1080px;
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #090d16;
+    color: #f1f5f9;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    page-break-after: always;
+    page-break-inside: avoid;
+    position: relative;
+    padding: 50px 70px;
+    background: radial-gradient(circle at 10% 20%, rgba(30, 58, 138, 0.25) 0%, rgba(9, 13, 22, 1) 60%),
+                radial-gradient(circle at 90% 80%, rgba(14, 116, 144, 0.18) 0%, rgba(9, 13, 22, 1) 50%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Header */
+  .slide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 18px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #38bdf8;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    width: fit-content;
+  }
+
+  .slide-title {
+    font-size: 34px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+  }
+
+  .slide-subtitle {
+    font-size: 15px;
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  .slide-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 6px 14px;
+    border-radius: 8px;
+  }
+
+  /* Body Layout */
+  .slide-body {
+    flex: 1;
+    display: grid;
+    gap: 24px;
+    margin: 22px 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .grid-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  /* Cards */
+  .card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  .card-highlight {
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.25) 100%);
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #38bdf8;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-bottom: 8px;
+  }
+
+  .card-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+  }
+
+  /* Theory Callout Box */
+  .theory-box {
+    background: rgba(15, 23, 42, 0.9);
+    border-left: 4px solid #38bdf8;
+    padding: 12px 16px;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 12px;
+  }
+  .theory-box h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 3px;
+  }
+  .theory-box p {
+    font-size: 12.5px;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+
+  /* Meeting Script / Talking Point Banner */
+  .script-box {
+    background: linear-gradient(90deg, rgba(30, 58, 138, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-top: auto;
+  }
+  .script-box .tag {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #60a5fa;
+    margin-bottom: 2px;
+  }
+  .script-box .text {
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.45;
+    font-style: italic;
+  }
+
+  /* Visual Workflow Flowchart (SVG / CSS) */
+  .flowchart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .flow-node {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+  }
+
+  .flow-node.active-node {
+    border-color: rgba(56, 189, 248, 0.5);
+    background: linear-gradient(90deg, rgba(14, 116, 144, 0.25) 0%, rgba(15, 23, 42, 0.85) 100%);
+  }
+
+  .flow-node.safe-node {
+    border-color: rgba(34, 197, 94, 0.5);
+    background: linear-gradient(90deg, rgba(20, 83, 45, 0.3) 0%, rgba(15, 23, 42, 0.85) 100%);
+  }
+
+  .node-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    flex-shrink: 0;
+  }
+
+  .node-title {
+    width: 280px;
+    flex-shrink: 0;
+  }
+  .node-title h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .node-title span {
+    font-size: 11.5px;
+    color: #94a3b8;
+  }
+
+  .node-desc {
+    flex: 1;
+    font-size: 12.5px;
+    color: #cbd5e1;
+    line-height: 1.4;
+  }
+
+  .node-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+    font-size: 12px;
+    color: #64748b;
+    position: relative;
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<!-- =========================================================================
+     SLIDE 1: PROBLEM STATEMENT, ROOT CAUSE & THE 3 ARCHAEOLOGICAL QUESTIONS
+     ========================================================================= -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="header-left">
+      <div class="pill-badge">🏛️ Slide 1: The Problem & Opportunity</div>
+      <h1 class="slide-title">Cloud Resource Archaeologist</h1>
+      <p class="slide-subtitle">Solving the Enterprise Cloud Waste Dilemma Through Evidence-Based Provenance</p>
+    </div>
+    <div class="slide-number">PAGE 01 / 03</div>
+  </div>
+
+  <div class="slide-body grid-2">
+    <!-- Left Card: Problem Theory -->
+    <div class="card card-highlight">
+      <div class="card-title">
+        <span>⚠️</span> The Problem: Why Cloud Waste Persists
+      </div>
+      
+      <p class="card-text">
+        Modern cloud environments run thousands of EC2 instances, EBS volumes, and security groups. Over months and years:
+      </p>
+
+      <div class="theory-box" style="border-left-color: #f43f5e;">
+        <h4>1. Employee Turnover & Project Abandonment</h4>
+        <p>Developers deploy infrastructure for a project, the project ends or the developer resigns, but the cloud servers stay running indefinitely.</p>
+      </div>
+
+      <div class="theory-box" style="border-left-color: #f59e0b;">
+        <h4>2. The Paralysis of Fear (The Core Dilemma)</h4>
+        <p><strong>Finding idle servers is easy; having the courage to delete them is hard.</strong> SREs refuse to delete resources because nobody knows if a critical batch job or internal tool depends on them.</p>
+      </div>
+
+      <div class="theory-box" style="border-left-color: #38bdf8;">
+        <h4>3. Disconnected Siloed Clues</h4>
+        <p>The server ID is in AWS, the audit log is buried in CloudTrail, the code is in GitHub, and IaC state is in Terraform. No single tool stitches these facts together.</p>
+      </div>
+
+      <div class="script-box">
+        <div class="tag">🎤 What to say in your meeting:</div>
+        <div class="text">"Team, enterprise cloud waste isn't an inventory problem — it's an evidence problem. We waste thousands every month because engineers are terrified of breaking production if they delete unowned resources."</div>
+      </div>
+    </div>
+
+    <!-- Right Card: The 3 Archaeological Questions -->
+    <div class="card">
+      <div class="card-title">
+        <span>🎯</span> The Solution: The 3 Core Questions We Answer
+      </div>
+
+      <p class="card-text">
+        Our Archaeologist is a deterministic system that reconstructs full provenance to answer:
+      </p>
+
+      <div class="theory-box" style="border-left-color: #38bdf8;">
+        <h4>Question 1: Why does it exist? (Lifecycle Timeline)</h4>
+        <p>Builds a chronological story from birth to present: which Git PR, commit hash, CI/CD pipeline, and CloudTrail event launched or changed it.</p>
+      </div>
+
+      <div class="theory-box" style="border-left-color: #a855f7;">
+        <h4>Question 2: Who owns it? (Deterministic Attribution)</h4>
+        <p>Applies a 5-tier fallback algorithm (Tags ➔ CODEOWNERS ➔ Account Owner ➔ Creator) with high/medium confidence ratings so you know exactly who to contact.</p>
+      </div>
+
+      <div class="theory-box" style="border-left-color: #22c55e;">
+        <h4>Question 3: Is it safe to delete? (Evidence Verdict)</h4>
+        <p>Evaluates zero-traffic telemetry, unattached states, and dependencies. If audit signals are missing, the tool says <em>"I don't know"</em> and blocks deletion.</p>
+      </div>
+
+      <div class="script-box" style="border-color: rgba(34, 197, 94, 0.4); background: linear-gradient(90deg, rgba(20, 83, 45, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);">
+        <div class="tag" style="color: #4ade80;">🎤 What to say in your meeting:</div>
+        <div class="text">"Instead of guessing, our tool automatically answers who built it, which team currently owns it, and gives a provable risk verdict with 0 risk of breaking production."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>Cloud Resource Archaeologist &bull; Problem Statement & Vision</span>
+    <span>Internal Architecture Presentation &bull; Slide 1</span>
+  </div>
+</div>
+
+<!-- =========================================================================
+     SLIDE 2: COMPLETE 5-PHASE TECHNICAL WORKFLOW & FLOWCHART
+     ========================================================================= -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="header-left">
+      <div class="pill-badge">⚙️ Slide 2: Technical Workflow & Architecture</div>
+      <h1 class="slide-title">End-to-End System Flowchart</h1>
+      <p class="slide-subtitle">How Data Flows from Ingestion to Reasoning and Reversible Decommissioning</p>
+    </div>
+    <div class="slide-number">PAGE 02 / 03</div>
+  </div>
+
+  <div class="slide-body">
+    <div class="flowchart-container">
+      
+      <!-- Phase 1 -->
+      <div class="flow-node">
+        <div class="node-badge">PHASE 1</div>
+        <div class="node-title">
+          <h4>Multi-Source Ingestion</h4>
+          <span>5 Independent Clue Layers</span>
+        </div>
+        <div class="node-desc">
+          <strong>Query live AWS APIs</strong> (EC2, EBS, Security Groups via <code>boto3</code>) + <strong>CloudTrail</strong> (audit events) + <strong>Terraform</strong> (<code>terraform.tfstate</code> mapping) + <strong>GitHub</strong> (PRs, commits, CODEOWNERS) + <strong>CloudWatch</strong> (CPU & network traffic).
+        </div>
+        <div class="node-tag">boto3 + tfstate + github</div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="flow-node active-node">
+        <div class="node-badge" style="color: #f59e0b; border-color: #f59e0b; background: rgba(245, 158, 11, 0.15);">PHASE 2</div>
+        <div class="node-title">
+          <h4>Signal Readiness Check</h4>
+          <span>Sanity & Quality Gate</span>
+        </div>
+        <div class="node-desc">
+          Audits observability coverage ($0-100\%$). If Flow Logs or audit trails are missing, the system <strong>blocks the verdict</strong>. <em>Golden Rule: Never guess without evidence — 'I don't know' is a feature.</em>
+        </div>
+        <div class="node-tag">readiness_checker.py</div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="flow-node">
+        <div class="node-badge">PHASE 3</div>
+        <div class="node-title">
+          <h4>Deterministic Identity Linking</h4>
+          <span>Fact Graph Assembly</span>
+        </div>
+        <div class="node-desc">
+          Fuses siloed clues across AWS, Git commits, and Terraform files using the <strong>Resource ID</strong> as the golden primary key into a unified 360° composite knowledge graph: <code>LinkedResource</code>.
+        </div>
+        <div class="node-tag">linker.py (Primary Key)</div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="flow-node active-node">
+        <div class="node-badge">PHASE 4</div>
+        <div class="node-title">
+          <h4>3 Core Reasoning Engines</h4>
+          <span>Timeline + Owner + Risk</span>
+        </div>
+        <div class="node-desc">
+          <strong>1. TimelineBuilder:</strong> Chronological history & drift detection &bull; <strong>2. OwnerResolver:</strong> 5-tier fallback with confidence score &bull; <strong>3. RiskEngine:</strong> Calculates rule-based safety verdict + exact monthly dollar savings.
+        </div>
+        <div class="node-tag">timeline + owner + risk</div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div class="flow-node safe-node">
+        <div class="node-badge" style="color: #4ade80; border-color: #4ade80; background: rgba(34, 197, 94, 0.15);">PHASE 5</div>
+        <div class="node-title">
+          <h4 style="color: #4ade80;">Safe Reversible Quarantine</h4>
+          <span>100% Reversible Decommission</span>
+        </div>
+        <div class="node-desc">
+          Human approves ➔ <strong>Automated Snapshot</strong> ➔ <strong>Network Isolation</strong> ➔ <strong>Stop Compute</strong> ➔ <strong>14-Day Canary Observation</strong>. If any alert fires ➔ <strong>1-Click Emergency Rollback</strong> in 10s.
+        </div>
+        <div class="node-tag" style="color: #4ade80; border-color: rgba(34, 197, 94, 0.4);">4-Stage Safety Net</div>
+      </div>
+
+    </div>
+
+    <div class="script-box" style="margin-top: 10px;">
+      <div class="tag">🎤 What to say in your meeting:</div>
+      <div class="text">"Here is our technical pipeline: We gather clues across 5 layers, verify signal readiness, join them by Resource ID into a single graph, run our 3 rule engines, and decommission resources safely using a 14-day reversible quarantine with 1-click rollback."</div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>Cloud Resource Archaeologist &bull; Technical Flowchart</span>
+    <span>Internal Architecture Presentation &bull; Slide 2</span>
+  </div>
+</div>
+
+<!-- =========================================================================
+     SLIDE 3: APPROVAL GOVERNANCE, REVERSIBLE SAFETY & BUSINESS ROI
+     ========================================================================= -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="header-left">
+      <div class="pill-badge">💼 Slide 3: Governance, Safety Net & ROI</div>
+      <h1 class="slide-title">Enterprise Governance & Business Impact</h1>
+      <p class="slide-subtitle">Why Engineering Leaders, Security & FinOps Teams Love This Tool</p>
+    </div>
+    <div class="slide-number">PAGE 03 / 03</div>
+  </div>
+
+  <div class="slide-body grid-3">
+    <!-- Card 1: How Approval Works -->
+    <div class="card">
+      <div class="card-title">
+        <span>🔐</span> How Approval Works
+      </div>
+      <p class="card-text">
+        No resource is ever deleted automatically. Approval is gathered via two channels:
+      </p>
+
+      <div class="theory-box" style="border-left-color: #38bdf8;">
+        <h4>1. Automated Slack / Teams Alert</h4>
+        <p>The bot identifies the owner and sends an interactive message with evidence and <code>[Approve]</code> / <code>[Reject]</code> buttons.</p>
+      </div>
+
+      <div class="theory-box" style="border-left-color: #a855f7;">
+        <h4>2. Role-Based UI Gating</h4>
+        <p>Inside the portal, the decommissioning button is locked until an authorized engineer checks the mandatory review sign-off.</p>
+      </div>
+
+      <div class="theory-box" style="border-left-color: #22c55e;">
+        <h4>3. Full Audit Trail</h4>
+        <p>Every approval, snapshot ID, and rollback reason is permanently logged in the SQLite/PostgreSQL database.</p>
+      </div>
+    </div>
+
+    <!-- Card 2: 4-Stage Quarantine -->
+    <div class="card">
+      <div class="card-title">
+        <span>🛡️</span> 4-Stage Reversible Safety
+      </div>
+      <p class="card-text">
+        Eliminates downtime fear with a staged, reversible isolation workflow:
+      </p>
+
+      <div class="theory-box" style="border-left-color: #38bdf8;">
+        <h4>Stage 1: Automated Snapshot</h4>
+        <p>Creates an EBS/AMI backup before any configuration or network change.</p>
+      </div>
+
+      <div class="theory-box" style="border-left-color: #f59e0b;">
+        <h4>Stage 2: Network Isolation & Stop</h4>
+        <p>Attaches a quarantine security group (blocking ingress) and stops compute. <strong>Billing halts immediately.</strong></p>
+      </div>
+
+      <div class="theory-box" style="border-left-color: #22c55e;">
+        <h4>Stage 3 & 4: 14-Day Canary or Rollback</h4>
+        <p>Monitors for 14 days. If any service alerts, <strong>1-click rollback</strong> restores the server in under 10 seconds.</p>
+      </div>
+    </div>
+
+    <!-- Card 3: Business ROI & Tech Stack -->
+    <div class="card card-highlight">
+      <div class="card-title">
+        <span>💰</span> Measurable ROI & Stack
+      </div>
+
+      <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 12px;">
+        <div style="font-size: 28px; font-weight: 800; color: #38bdf8; font-family: 'JetBrains Mono', monospace;">20% - 35%</div>
+        <div style="font-size: 12px; color: #94a3b8;">Average Monthly Cloud Bill Reduction</div>
+      </div>
+
+      <div class="theory-box">
+        <h4>⚡ Production-Grade Tech Stack</h4>
+        <p>Python 3.11+, FastAPI, SQLAlchemy, boto3, Terraform state parser, Streamlit UI, and MCP Tools for watsonx AI Agent.</p>
+      </div>
+
+      <div class="theory-box">
+        <h4>🌍 Dual-Mode Operation</h4>
+        <p>Tested live on AWS Mumbai (<code>ap-south-1</code>) + offline mock sandbox for automated CI/CD test suites.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-footer">
+    <span>Cloud Resource Archaeologist &bull; Enterprise Governance & ROI</span>
+    <span>Internal Architecture Presentation &bull; Slide 3</span>
+  </div>
+</div>
+
+</body>
+</html>

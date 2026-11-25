@@ -1,7 +1,7 @@
 """FastAPI Application exposing Cloud Resource Archaeologist REST endpoints."""
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -65,7 +65,7 @@ class RollbackRequest(BaseModel):
 @app.get("/health", tags=["System"])
 def health_check():
     """Health status endpoint."""
-    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+    return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
 @app.get("/readiness", response_model=ReadinessReport, tags=["Observability"])
@@ -255,7 +255,7 @@ def start_quarantine(
     # Generate synthetic backup snapshot
     snapshot_id = f"snap-auto-{uuid.uuid4().hex[:8]}"
     quarantine_id = f"quar-{uuid.uuid4().hex[:8]}"
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     watch_until = now + timedelta(days=payload.watch_period_days)
 
     prev_state = {
@@ -322,7 +322,7 @@ def rollback_quarantine(
     if not active_quarantine:
         raise HTTPException(status_code=400, detail=f"No active quarantine record found for {resource_id}")
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     logs = active_quarantine.logs
     logs.append(f"[{now.isoformat()}] ROLLBACK TRIGGERED: {payload.reason}")
     logs.append(f"[{now.isoformat()}] Restoring previous state from snapshot {active_quarantine.snapshot_id}")

@@ -84,6 +84,11 @@ resource "aws_instance" "payment_api" {
   }
 }
 
+resource "aws_ec2_instance_state" "payment_api_state" {
+  instance_id = aws_instance.payment_api.id
+  state       = "stopped"
+}
+
 # ── Resource 2: Old Analytics Instance (Candidate for cleanup) ──
 resource "aws_instance" "old_analytics" {
   ami           = data.aws_ami.amazon_linux_2023.id
@@ -93,6 +98,11 @@ resource "aws_instance" "old_analytics" {
     Name    = "old-analytics-server"
     Project = "Analytics-Old"
   }
+}
+
+resource "aws_ec2_instance_state" "old_analytics_state" {
+  instance_id = aws_instance.old_analytics.id
+  state       = "stopped"
 }
 
 # ── Resource 3: Orphaned EBS Volume (Unattached 1 GB test volume) ──
